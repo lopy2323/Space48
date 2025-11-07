@@ -15,46 +15,40 @@ public class ShipBehaviour : MonoBehaviour
     [SerializeField] private TMP_Text introductionField;
     [SerializeField] private TMP_Text messageField;
 
+    Movment movment;
+
+    private string inroductionMessage = "Welcome to Space 4 8. \n Move your ship with the arrows or WASD. \n Shoot with SPACE. \n Gather pickups and cycle with 'Left CTR'.  \n  Use pickups with 'E'.";
+
     private float cooldownCounter = 0f;
     private List<Color> items = new List<Color>();
     private int activeItemIndex = -1;
 
-    // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(Introduction());
-    }
-    IEnumerator Introduction() { 
-        introductionField.enabled = true;
-        introductionField.text = "Welcome to Space 4 8. \n Move your ship with the arrows or WASD. \n Shoot with SPACE. \n Gather pickups and cycle with 'Left CTR'.  \n  Use pickups with 'E'.";
-        yield return new WaitForSeconds(5f);
-        introductionField.enabled = false;
+        StartCoroutine(ShowMessage(inroductionMessage));
+        movment = GetComponent<Movment>();
     }
     IEnumerator ShowMessage(string message) {
         messageField.enabled = true;
         messageField.text = message;
-        yield return new WaitForSeconds(3f);
+        if (message == inroductionMessage)
+        {
+            yield return new WaitForSeconds(5f);
+        }
+        else
+        {
+            yield return new WaitForSeconds(3f);
+        }
         messageField.enabled = false;
     }
-    // Update is called once per frame
     void Update()
     {
-        Move();   
-        Rotate();
+        movment.Move(moveSpeed, Input.GetAxis("Vertical"));
+        movment.Rotate(rotationSpeed, Input.GetAxis("Horizontal"));
         Shoot();
         CycleItems();
         UseItem();
 
-    }
-
-    void Move() {
-
-        transform.position = transform.position + transform.forward * moveSpeed * Input.GetAxis("Vertical") * Time.deltaTime;
-        
-    }
-    void Rotate()
-    {
-        transform.Rotate(transform.up * rotationSpeed * Time.deltaTime * Input.GetAxis("Horizontal"));
     }
     void Shoot() { 
         cooldownCounter += Time.deltaTime;
@@ -147,34 +141,4 @@ public class ShipBehaviour : MonoBehaviour
             
         }
     }
-
-    /*TO DO 
-    
-    Optie 1:
-
-    void GetHit(){ 
-        //zorg voor enemies die terugschieten. Als je geraakt wordt gaan er levens af. als je levens op zijn ben je af en herstart de game.
-    }  
-    void HealthBoost(){ 
-        //zorg voor een extra powerup die je een health boost geeft
-    }
-
-    Optie 2:
-
-    void ActivateShield(){ 
-        //Zorg voor een energie schild dat aangezet kan worden     
-    }
-    void DeactivateShield(){
-        //Zorg dat je het schild uit kunt zetten om energie te sparen
-    }
-    void CheckShieldEnergy(){
-        //zorg dat je energie op gaat bij gebruik van het schild
-        //is de energie op dan gaat het schild uit
-    }
-    void RegenerateShield(){
-        //Zorg dat je schild langzaam regenereert
-    } 
-
-    */
-
 }
